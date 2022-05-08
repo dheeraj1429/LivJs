@@ -19,11 +19,7 @@
 
 .bounce-div-element {
     width: 200px;
-    height: 60px;
-    margin: auto;
-    margin-top: 40%;
-    margin-left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
 }
 
 .ball {
@@ -111,4 +107,40 @@
     left: auto;
     right: 15%;
     animation-delay: 0.3s;
+}
+
+.fade_down {
+    opacity: 0;
+    transition: all 0.5s ease;
+    transform: translateY(100px);
+}
+
+.fade_up {
+    opacity: 1;
+    transition: all 0.5s ease;
+    transform: translateY(0);
+}
+
+.fade_right {
+    opacity: 0;
+    transition: all 0.5s ease;
+    transform: translateX(100px);
+}
+
+.fade_center {
+    opacity: 1;
+    transition: all 0.5s ease;
+    transform: translateX(0);
+}
+
+.fade_down_al {
+    opacity: 0;
+    transition: all 0.5s ease;
+    transform: translateY(-100px);
+}
+
+.fade_center_al {
+    opacity: 1;
+    transition: all 0.5s ease;
+    transform: translateY(0);
 }

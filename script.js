@@ -88,25 +88,154 @@
         }, 50);
     };
 
-    // ** slide up text animation ** //
-    globalFnObject.loadingBounce = function (elem) {
+    // ** bounce animation  ** //
+    globalFnObject.loadingBounce = function (elem, option) {
         let target = _grabDocumentElements(elem);
+        let ballNumbers = 6;
 
         // ** if there is no elements found then throw a new error on to console ** //
         if (!target) throw new Error(`slide text dom elements is not found!!`);
 
-        const html = ` 
-        <div class="bounce-div-element">
-            <div class="ball"></div>
-            <div class="ball"></div>
-            <div class="ball"></div>
+        const divElm = document.createElement("div");
+        divElm.className = "bounce-div-element";
 
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-        </div>`;
+        for (const styled in option) {
+            divElm.style[`${styled}`] = `${option[styled]}`;
+        }
 
-        target.insertAdjacentHTML("beforebegin", html);
+        for (let i = 0; i < ballNumbers; i++) {
+            const innerDivElm = document.createElement("div");
+            innerDivElm.className = "ball";
+
+            if (i === 3 || i > 3) {
+                innerDivElm.className = "shadow";
+            }
+
+            divElm.appendChild(innerDivElm);
+        }
+
+        target.replaceWith(divElm);
+    };
+
+    // ** slide options object ** //
+    const slideOptionsFn = function (options) {
+        const Option = {
+            root: null,
+            threshold: 0,
+            rootMargin: `${options.rootMargin}px`,
+        };
+
+        return Option;
+    };
+
+    // ** observer function ** //
+    const ObserverFunction = function (targetElem, observer) {
+        // ** loop over all target elements ** //
+        if (targetElem.length === undefined) {
+            observer.observe(targetElem);
+        } else {
+            targetElem.forEach((el) => {
+                observer.observe(el);
+            });
+        }
+    };
+
+    // ** IntersectionObsert function ** //
+    const IntersectionFn = function (callback, option) {
+        const observer = new IntersectionObserver(function (entries, observe) {
+            entries.forEach((el, i, array) => {
+                callback(el);
+            });
+        }, option);
+
+        return observer;
+    };
+
+    // ** scroll function ** //
+    const scrollFunction = function (el, targetElem, addClass, removeClass) {
+        // ** grab the target from the el object ** //
+        const target = el.target;
+
+        if (!el.isIntersecting) {
+            // ** if the element counte is one then add the class into the one element ** //
+            target.classList.add(`${addClass}`);
+            target.classList.remove(`${removeClass}`);
+
+            // ** if there is multy elements then add the class for each element ** //
+            if (!targetElem.length === undefined) {
+                targetElem.forEach((elm) => {
+                    elm.classList.add(`${addClass}`);
+                    elm.classList.remove(`${removeClass}`);
+                });
+            }
+        }
+
+        if (el.isIntersecting) {
+            target.classList.add(`${removeClass}`);
+            target.classList.remove(`${addClass}`);
+
+            if (!targetElem.length === undefined) {
+                targetElem.forEach((el) => {
+                    el.classList.add(`${removeClass}`);
+                    el.classList.remove(`${addClass}`);
+                });
+            }
+        }
+    };
+
+    // ** error function ** //
+    const errorHandler = function () {
+        throw new Error("slide elements is not found");
+    };
+
+    // ** scroll down animation ** //
+    globalFnObject.slideUp = function (elem, options) {
+        const targetElem = _grabDocumentElements(elem, options);
+
+        if (!targetElem || targetElem.length === 0) errorHandler();
+
+        // ** animation options object ** //
+        const Option = slideOptionsFn(options);
+
+        // ** create the observer for targeting the dom elems section ** //
+        const IntersectionObsertFn = IntersectionFn((el) => {
+            scrollFunction(el, targetElem, "fade_down", "fade_up");
+        }, Option);
+
+        // ** observer fucntion to capture the target elem for each action fire ** //
+        ObserverFunction(targetElem, IntersectionObsertFn);
+    };
+
+    // ** slide right animation ** //
+    globalFnObject.slideRight = function (elem, options) {
+        const targetElem = _grabDocumentElements(elem, options);
+
+        if (!targetElem || targetElem.length === 0) errorHandler();
+
+        // ** animation options object ** //
+        const Option = slideOptionsFn(options);
+
+        const IntersectionObsertFn = IntersectionFn((el) => {
+            scrollFunction(el, targetElem, "fade_right", "fade_center");
+        }, Option);
+
+        ObserverFunction(targetElem, IntersectionObsertFn);
+    };
+
+    // ** slide down animation function ** //
+    globalFnObject.slideDown = function (elem, options) {
+        const targetElem = _grabDocumentElements(elem, options);
+
+        if (!targetElem || targetElem.length === 0) errorHandler();
+
+        // ** animation options object ** //
+        const Option = slideOptionsFn(options);
+
+        const IntersectionObsertFn = IntersectionFn((el) => {
+            scrollFunction(el, targetElem, "fade_down_al", "fade_center_al");
+        }, Option);
+
+        ObserverFunction(targetElem, IntersectionObsertFn);
     };
 
     // checking fucntions ** //
@@ -236,13 +365,6 @@
             // ** inserting the dom elements into the target element ** //
             targetDiv.insertAdjacentElement("beforeend", domCreateElem);
         }
-    };
-
-    // ** calculate dom style ** //
-    globalFnObject.calcAllStyle = function (element) {
-        const target = _grabDocumentElements(element);
-        const computerStyle = window.getComputedStyle(target);
-        return computerStyle;
     };
 
     // ** return the global object for the user can access the libray object ** //
