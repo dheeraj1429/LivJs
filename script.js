@@ -7,7 +7,8 @@
     // ** global variables ** //
     let targetElm,
         char = 0,
-        allChar;
+        allChar,
+        domCreateElem;
 
     // ** document selection function to grab the document from the dom return the values based on the conditon ** //
     const _grabDocumentElements = function (elem, options) {
@@ -87,26 +88,47 @@
         }, 50);
     };
 
+    // ** slide up text animation ** //
+    globalFnObject.loadingBounce = function (elem) {
+        let target = _grabDocumentElements(elem);
+
+        // ** if there is no elements found then throw a new error on to console ** //
+        if (!target) throw new Error(`slide text dom elements is not found!!`);
+
+        const html = ` 
+        <div class="bounce-div-element">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+
+            <div class="shadow"></div>
+            <div class="shadow"></div>
+            <div class="shadow"></div>
+        </div>`;
+
+        target.insertAdjacentHTML("beforebegin", html);
+    };
+
     // checking fucntions ** //
-    const checkClass = function (options, domCreateElem) {
+    const _checkClass = function (options, domCreateElem) {
         if (options.class) {
             domCreateElem.setAttribute("class", options.class);
         }
     };
 
-    const checkId = function (options, domCreateElem) {
+    const _checkId = function (options, domCreateElem) {
         if (options.id) {
             domCreateElem.setAttribute("id", options.id);
         }
     };
 
-    const checkTextContent = function (options, domCreateElem) {
+    const _checkTextContent = function (options, domCreateElem) {
         if (options.textContent) {
             domCreateElem.textContent = options.textContent;
         }
     };
 
-    const checkDataTargetFunction = function (options, domCreateElem) {
+    const _checkDataTargetFunction = function (options, domCreateElem) {
         // ** setting the data attribute into the dom elements ** //
         if (options.dataAttribute) {
             const dataTargetValue = options.dataAttribute;
@@ -115,6 +137,31 @@
             // ** set the attribute into the dom element ** //
             domCreateElem.setAttribute(`data-${splitData[0]}`, `${splitData[1].trim()}`);
         }
+    };
+
+    // ** convert the tags into the a tag if the tag has no link property then convert the tag into the a tag and then add the link into them ** //
+    const _convertIntoATag = function (options, property) {
+        const a = document.createElement("a");
+        a.href = options.link;
+
+        const domELem = document.createElement(property);
+
+        // ** checking class function ** //
+        _checkClass(options, domELem);
+
+        // ** checking id function ** //
+        _checkId(options, domELem);
+
+        // ** checking inner text content function ** //
+        _checkTextContent(options, domELem);
+
+        // ** checking data target function ** //
+        _checkDataTargetFunction(options, domELem);
+
+        // ** insert the elements inside the a tag element ** //
+        a.append(domELem);
+
+        return a;
     };
     // checking fucntions ** //
 
@@ -127,53 +174,29 @@
         // ** creating dom elements ** //
         for (const property in options) {
             // ** first we want to ceate the element then if there is a option object to add the classes and text content the add the class and content into that div ** //
-            let domCreateElem = document.createElement(property);
+            domCreateElem = document.createElement(property);
 
             // ** checking class function ** //
-            checkClass(options[property], domCreateElem);
+            _checkClass(options[property], domCreateElem);
 
             // ** checking id function ** //
-            checkId(options[property], domCreateElem);
+            _checkId(options[property], domCreateElem);
 
             // ** checking inner text content function ** //
-            checkTextContent(options[property], domCreateElem);
+            _checkTextContent(options[property], domCreateElem);
 
             // ** checking data target function ** //
-            checkDataTargetFunction(options[property], domCreateElem);
+            _checkDataTargetFunction(options[property], domCreateElem);
 
             // ** setting the link && herf tag into the dom element ** //
             if (options[property].link) {
                 // ** first we want to check the element is the 'a' tag if the element is 'a' tag then add the link to it, if the elements is not 'a' tag then first creat the a tag an place the element into the a tag and then add the link to into the a tag ** //
-
                 if (property === "a") {
                     domCreateElem.setAttribute("href", options[property].link);
                 } else {
-                    const a = document.createElement("a");
-                    a.href = options[property].link;
-
-                    const domELem = document.createElement(property);
-
-                    // ** checking class function ** //
-                    checkClass(options, property, domELem);
-
-                    // ** checking id function ** //
-                    checkId(options, property, domELem);
-
-                    // ** checking inner text content function ** //
-                    checkTextContent(options, property, domELem);
-
-                    // ** checking data target function ** //
-                    checkDataTargetFunction(options, property, domELem);
-
-                    // ** insert the elements inside the a tag element ** //
-                    a.append(domELem);
-
-                    domCreateElem = a;
+                    domCreateElem = _convertIntoATag(options[property], property);
                 }
             }
-
-            // ** inserting the dom elements into the target element ** //
-            targetDiv.insertAdjacentElement("beforeend", domCreateElem);
 
             // ** checking inner elements ** //
             if (options[property].innerElements) {
@@ -185,21 +208,41 @@
                     let innerDomElements = document.createElement(key);
 
                     // ** checking class function ** //
-                    checkClass(value, innerDomElements);
+                    _checkClass(value, innerDomElements);
 
                     // ** checking id function ** //
-                    checkId(value, innerDomElements);
+                    _checkId(value, innerDomElements);
 
                     // ** checking inner text content function ** //
-                    checkTextContent(value, innerDomElements);
+                    _checkTextContent(value, innerDomElements);
 
                     // ** checking data target function ** //
-                    checkDataTargetFunction(value, innerDomElements);
+                    _checkDataTargetFunction(value, innerDomElements);
 
-                    console.log(innerDomElements);
+                    if (value.link) {
+                        if (key === "a") {
+                            innerDomElements.setAttribute("href", value.link);
+                        } else {
+                            // convert into a tag...
+                            innerDomElements = _convertIntoATag(value, key);
+                        }
+                    }
+
+                    // ** insert the creating elements into the parent div elements ** //
+                    domCreateElem.append(innerDomElements);
                 }
             }
+
+            // ** inserting the dom elements into the target element ** //
+            targetDiv.insertAdjacentElement("beforeend", domCreateElem);
         }
+    };
+
+    // ** calculate dom style ** //
+    globalFnObject.calcAllStyle = function (element) {
+        const target = _grabDocumentElements(element);
+        const computerStyle = window.getComputedStyle(target);
+        return computerStyle;
     };
 
     // ** return the global object for the user can access the libray object ** //
@@ -212,70 +255,3 @@
         window.livJs = _myLibraryFn();
     }
 })(window);
-
-// ** testing ** //
-
-// for animation text
-// livJs.textAnimation(".lvText");
-
-// adding dom style
-// livJs.addDomStyle(".lvText", {
-//     color: "red",
-//     fontSize: "10px",
-// });
-
-// creating dom elements
-// livJs.createDomElm(".para", {
-//     div: {
-//         class: "documents",
-//         textContent: "demo data",
-//         id: "demo-div",
-//         dataAttribute: "target, some-data",
-//     },
-//     p: {
-//         class: "para",
-//         textContent: "this is some deta for learnig somthing new",
-//         dataAttribute: "speen, speen-data",
-//         link: "www.google.com",
-//     },
-//     a: {
-//         textContent: "some demo new text",
-//     },
-// });
-
-livJs.createDomElm(".para", {
-    div: {
-        class: "col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4",
-        dataAttribute: "target, some-dataTarget",
-        innerElements: {
-            p: {
-                class: "para",
-                textContent: "some demo content",
-            },
-            div: {
-                class: "row",
-                textContent: "new text content",
-            },
-            h1: {
-                class: "heading",
-                textContent: "some heading class",
-                dataAttribute: "target, heading-target",
-            },
-        },
-    },
-    p: {
-        class: "para-heading",
-        dataAttribute: "target,some-target",
-        innerElements: {
-            a: {
-                class: "link",
-                textContent: "some demo text",
-            },
-            p: {
-                class: "demo_para",
-                id: "new-elem",
-                textContent: "demo content",
-            },
-        },
-    },
-});

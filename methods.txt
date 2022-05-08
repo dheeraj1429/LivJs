@@ -1,0 +1,58 @@
+            livJs.textAnimation(".lvText");
+
+            livJs.textAnimation(".lvText");
+
+            bounce animation
+            livJs.loadingBounce(".bounce");
+
+            adding dom style
+            livJs.addDomStyle(".point", {
+                color: "red",
+                fontSize: "100px",
+            });
+
+            creating dom elements
+            livJs.createDomElm(".para", {
+                div: {
+                    class: "documents",
+                    id: "demo-div",
+                    dataAttribute: "target, some-data",
+                    innerElements: {
+                        p: {
+                            textContent: "this is some think new",
+                            link: "www.google.com",
+                        },
+                        a: {
+                            textContent: "some demo links",
+                            link: "www.youtube.com",
+                        },
+                        h1: {
+                            class: "heading-class",
+                            textContent: "some heading content elements",
+                        },
+                    },
+                },
+                h1: {
+                    class: "heading-div",
+                    id: "heading-id",
+                    innerElements: {
+                        p: {
+                            class: "heading-content-cl",
+                            textContent: "some demo text",
+                        },
+                    },
+                },
+                p: {
+                    class: "para",
+                    textContent: "this is some deta for learnig somthing new",
+                    dataAttribute: "speen, speen-data",
+                    link: "www.google.com",
+                },
+                span: {
+                    textContent: "some demo new text",
+                    link: "www.google.com",
+                },
+            });
+
+            calculate all style
+            console.log(livJs.calcAllStyle(".heading"));
