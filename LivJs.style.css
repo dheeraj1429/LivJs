@@ -144,3 +144,9 @@
     transition: all 0.5s ease;
     transform: translateY(0);
 }
+
+.fade_slide_left {
+    opacity: 0;
+    transition: all 0.5s ease;
+    transform: translateX(-20px);
+}

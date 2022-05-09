@@ -185,12 +185,13 @@
 
     // ** error function ** //
     const errorHandler = function () {
-        throw new Error("slide elements is not found");
+        throw new Error("DOM elements is not found");
     };
 
     // ** scroll down animation ** //
-    globalFnObject.slideUp = function (elem, options) {
+    globalFnObject.slide = function (elem, options) {
         const targetElem = _grabDocumentElements(elem, options);
+        let IntersectionObsertFn;
 
         if (!targetElem || targetElem.length === 0) errorHandler();
 
@@ -198,43 +199,25 @@
         const Option = slideOptionsFn(options);
 
         // ** create the observer for targeting the dom elems section ** //
-        const IntersectionObsertFn = IntersectionFn((el) => {
-            scrollFunction(el, targetElem, "fade_down", "fade_up");
-        }, Option);
+        if (options.slide === "slideUp" || options.slide === "top") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "fade_down", "fade_up");
+            }, Option);
+        } else if (options.slide === "slideRight" || options.slide === "right") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "fade_right", "fade_center");
+            }, Option);
+        } else if (options.slide === "slideDown" || options.slide === "down") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "fade_down_al", "fade_center_al");
+            }, Option);
+        } else if (options.slide === "slideLeft" || options.slide === "left") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "fade_slide_left", "fade_center");
+            }, Option);
+        }
 
         // ** observer fucntion to capture the target elem for each action fire ** //
-        ObserverFunction(targetElem, IntersectionObsertFn);
-    };
-
-    // ** slide right animation ** //
-    globalFnObject.slideRight = function (elem, options) {
-        const targetElem = _grabDocumentElements(elem, options);
-
-        if (!targetElem || targetElem.length === 0) errorHandler();
-
-        // ** animation options object ** //
-        const Option = slideOptionsFn(options);
-
-        const IntersectionObsertFn = IntersectionFn((el) => {
-            scrollFunction(el, targetElem, "fade_right", "fade_center");
-        }, Option);
-
-        ObserverFunction(targetElem, IntersectionObsertFn);
-    };
-
-    // ** slide down animation function ** //
-    globalFnObject.slideDown = function (elem, options) {
-        const targetElem = _grabDocumentElements(elem, options);
-
-        if (!targetElem || targetElem.length === 0) errorHandler();
-
-        // ** animation options object ** //
-        const Option = slideOptionsFn(options);
-
-        const IntersectionObsertFn = IntersectionFn((el) => {
-            scrollFunction(el, targetElem, "fade_down_al", "fade_center_al");
-        }, Option);
-
         ObserverFunction(targetElem, IntersectionObsertFn);
     };
 
@@ -295,7 +278,7 @@
     // checking fucntions ** //
 
     // ** creat the dom elements  ** //
-    globalFnObject.createDomElm = function (elem, options) {
+    globalFnObject.createDomElements = function (elem, options) {
         const targetDiv = _grabDocumentElements(elem);
 
         if (!targetDiv) return;
