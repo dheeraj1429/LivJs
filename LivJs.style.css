@@ -4,24 +4,20 @@
     line-height: 25px;
     letter-spacing: 7px;
 }
-
 .lvText .letter {
     opacity: 0;
     transition: all 0.4s ease;
     transform: translateX(50px);
     display: inline-block;
 }
-
 .fade {
     opacity: 1 !important;
     transform: translateX(0px) !important;
 }
-
 .bounce-div-element {
     width: 200px;
     position: relative;
 }
-
 .ball {
     width: 20px;
     height: 20px;
@@ -30,7 +26,6 @@
     left: 15%;
     animation: ball 0.5s alternate infinite ease;
 }
-
 @keyframes ball {
     0% {
         top: 60px;
@@ -52,20 +47,16 @@
         background-color: #00a4ccff;
     }
 }
-
 .ball:nth-child(2) {
     left: 45%;
     animation-delay: 0.2s;
 }
-
 .ball:nth-child(3) {
     left: auto;
     right: 15%;
     animation-delay: 0.3s;
 }
-
 /*for shadow*/
-
 .shadow {
     width: 20px;
     height: 4px;
@@ -78,7 +69,6 @@
     filter: blur(1px);
     animation: shadow 0.5s alternate infinite ease;
 }
-
 @keyframes shadow {
     0% {
         transform: scaleX(1.5);
@@ -97,56 +87,55 @@
         background-color: #00a4cc6b;
     }
 }
-
 .shadow:nth-child(4) {
     left: 45%;
     animation-delay: 0.2s;
 }
-
 .shadow:nth-child(5) {
     left: auto;
     right: 15%;
     animation-delay: 0.3s;
 }
-
 .fade_down {
     opacity: 0;
-    transition: all 0.5s ease;
     transform: translateY(100px);
 }
-
 .fade_up {
     opacity: 1;
-    transition: all 0.5s ease;
     transform: translateY(0);
 }
-
 .fade_right {
     opacity: 0;
-    transition: all 0.5s ease;
-    transform: translateX(100px);
+    transform: translateX(30px);
 }
-
 .fade_center {
     opacity: 1;
-    transition: all 0.5s ease;
     transform: translateX(0);
 }
-
 .fade_down_al {
     opacity: 0;
-    transition: all 0.5s ease;
     transform: translateY(-100px);
 }
-
 .fade_center_al {
     opacity: 1;
-    transition: all 0.5s ease;
     transform: translateY(0);
 }
-
 .fade_slide_left {
     opacity: 0;
-    transition: all 0.5s ease;
     transform: translateX(-20px);
+}
+.zoom_hide {
+    opacity: 0;
+    transform: scale(0.8);
+}
+.zoom_none {
+    opacity: 1;
+    transform: scale(1);
+}
+.zoom_reverse {
+    opacity: 0;
+    transform: scale(1.6);
+}
+.zoom-fade {
+    opacity: 0;
 }

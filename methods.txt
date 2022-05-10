@@ -56,3 +56,44 @@
 
             calculate all style
             console.log(livJs.calcAllStyle(".heading"));
+
+            livJs.animation(".box", {
+                rootMargin: -100,
+                slide: "top",
+                elements: "many",
+            });
+
+            livJs.createDomElements(".container", {
+                div: {
+                    class: "main-div",
+                    id: "div_id",
+                    dataAttribute: "target, demo-target",
+                    innerElements: {
+                        h1: {
+                            textContent: "some demo content",
+                        },
+                        div: {
+                            class: "box",
+                        },
+                    },
+                },
+            });
+
+            livJs.toggle(".box", {
+                toogleClass: "randomClass",
+                clickTarget: ".box",
+                elements: "many",
+            });
+
+            livJs.CreateElements(".container", "div", {
+                class: "box",
+                id: "id",
+                dataAttribute: [{ target: "data-element" }],
+                link: "www.google.com",
+                innerElements: [
+                    {
+                        element: "div",
+                        class: "box",
+                    },
+                ],
+            });

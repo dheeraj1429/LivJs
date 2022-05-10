@@ -9,35 +9,60 @@
         <link rel="stylesheet" href="./LivJs.style.css" />
 
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-shadow: 0;
+            }
             section {
                 width: 100%;
-                height: 100vh;
-                border: 1px solid red;
-                padding: 2rem;
+                height: 80vh;
                 display: flex;
             }
-            .box {
+            .container {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                width: 100%;
+                background-image: linear-gradient(
+                    to right top,
+                    #174f15,
+                    #33741c,
+                    #549b20,
+                    #7bc31e,
+                    #a8eb12
+                );
+            }
+            .box,
+            .section_box,
+            .three_box,
+            .four_box {
                 width: 100px;
-                height: 200px;
-                border: 1px solid red;
+                height: 100px;
+                border-radius: 5px;
+                background-image: linear-gradient(
+                    to right top,
+                    #051937,
+                    #004d7a,
+                    #008793,
+                    #00bf72,
+                    #a8eb12
+                );
             }
         </style>
     </head>
     <body>
         <section></section>
         <section>
-            <div class="box"></div>
-            <div class="box"></div>
-            <div class=""></div>
-            <div class=""></div>
+            <div class="container"></div>
         </section>
 
         <script src="./script.js"></script>
         <script>
-            livJs.slide(".box", {
-                rootMargin: -100,
-                elements: "many",
-                slide: "left",
+            livJs.CreateElements(".container", "div", {
+                class: "box",
+                id: "id",
+                dataAttribute: [{ target: "data-element" }],
             });
         </script>
     </body>

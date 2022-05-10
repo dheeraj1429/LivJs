@@ -5,10 +5,10 @@
     const globalFnObject = {};
 
     // ** global variables ** //
-    let targetElm,
-        char = 0,
-        allChar,
-        domCreateElem;
+    let char = 0,
+        domCreateElem,
+        IntersectionObsertFn,
+        targetElm;
 
     // ** document selection function to grab the document from the dom return the values based on the conditon ** //
     const _grabDocumentElements = function (elem, options) {
@@ -114,6 +114,7 @@
             divElm.appendChild(innerDivElm);
         }
 
+        // ** replace the target element with the new created div element ** //
         target.replaceWith(divElm);
     };
 
@@ -143,7 +144,7 @@
     // ** IntersectionObsert function ** //
     const IntersectionFn = function (callback, option) {
         const observer = new IntersectionObserver(function (entries, observe) {
-            entries.forEach((el, i, array) => {
+            entries.forEach((el) => {
                 callback(el);
             });
         }, option);
@@ -157,43 +158,28 @@
         const target = el.target;
 
         if (!el.isIntersecting) {
-            // ** if the element counte is one then add the class into the one element ** //
             target.classList.add(`${addClass}`);
             target.classList.remove(`${removeClass}`);
-
-            // ** if there is multy elements then add the class for each element ** //
-            if (!targetElem.length === undefined) {
-                targetElem.forEach((elm) => {
-                    elm.classList.add(`${addClass}`);
-                    elm.classList.remove(`${removeClass}`);
-                });
-            }
         }
 
+        // ** if the target is intersecting the dom ** //
         if (el.isIntersecting) {
+            target.style.transition = "all 0.5s ease";
             target.classList.add(`${removeClass}`);
             target.classList.remove(`${addClass}`);
-
-            if (!targetElem.length === undefined) {
-                targetElem.forEach((el) => {
-                    el.classList.add(`${removeClass}`);
-                    el.classList.remove(`${addClass}`);
-                });
-            }
         }
     };
 
     // ** error function ** //
-    const errorHandler = function () {
-        throw new Error("DOM elements is not found");
+    const errorHandler = function (error) {
+        throw new Error(error);
     };
 
     // ** scroll down animation ** //
-    globalFnObject.slide = function (elem, options) {
+    globalFnObject.animation = function (elem, options) {
         const targetElem = _grabDocumentElements(elem, options);
-        let IntersectionObsertFn;
 
-        if (!targetElem || targetElem.length === 0) errorHandler();
+        if (!targetElem || targetElem.length === 0) errorHandler('"DOM elements is not found"');
 
         // ** animation options object ** //
         const Option = slideOptionsFn(options);
@@ -215,40 +201,87 @@
             IntersectionObsertFn = IntersectionFn((el) => {
                 scrollFunction(el, targetElem, "fade_slide_left", "fade_center");
             }, Option);
+        } else if (options.zoom === "fade-zoom" || options.zoom === "zoom") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "zoom_hide", "zoom_none");
+            }, Option);
+        } else if (options.zoom === "zoom-reverse") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "zoom_reverse", "zoom_none");
+            }, Option);
+        } else if (options.zoom === "fade") {
+            IntersectionObsertFn = IntersectionFn((el) => {
+                scrollFunction(el, targetElem, "zoom-fade", "zoom_none");
+            }, Option);
         }
 
         // ** observer fucntion to capture the target elem for each action fire ** //
         ObserverFunction(targetElem, IntersectionObsertFn);
     };
 
+    // ** capture the class is present if the elements have the class then renove the class from the elements else add the class into the element ** //
+    const checkClassIsPresent = function (target, options) {
+        if (options.toogleClass) {
+            if (target.classList.contains(options.toogleClass)) {
+                target.classList.remove(options.toogleClass);
+            } else {
+                target.classList.add(options.toogleClass);
+            }
+        }
+    };
+
+    // ** toggle function ** //
+    globalFnObject.toggle = function (element, options) {
+        const target = _grabDocumentElements(element);
+
+        if (options.clickTarget) {
+            const clickTargetElem = _grabDocumentElements(options.clickTarget, options);
+
+            if (clickTargetElem.length === undefined) {
+                clickTargetElem.addEventListener("click", function () {
+                    checkClassIsPresent(target, options);
+                });
+            } else {
+                clickTargetElem.forEach((el, i, array) => {
+                    el.addEventListener("click", function () {
+                        checkClassIsPresent(target, options);
+                    });
+                });
+            }
+        }
+
+        checkClassIsPresent(target, options);
+    };
+
     // checking fucntions ** //
     const _checkClass = function (options, domCreateElem) {
-        if (options.class) {
-            domCreateElem.setAttribute("class", options.class);
-        }
+        if (!options.class) return;
+
+        domCreateElem.setAttribute("class", options.class);
     };
 
     const _checkId = function (options, domCreateElem) {
-        if (options.id) {
-            domCreateElem.setAttribute("id", options.id);
-        }
+        if (!options.id) return;
+
+        domCreateElem.setAttribute("id", options.id);
     };
 
     const _checkTextContent = function (options, domCreateElem) {
-        if (options.textContent) {
-            domCreateElem.textContent = options.textContent;
-        }
+        if (!options.textContent) return;
+
+        domCreateElem.textContent = options.textContent;
     };
 
     const _checkDataTargetFunction = function (options, domCreateElem) {
-        // ** setting the data attribute into the dom elements ** //
-        if (options.dataAttribute) {
-            const dataTargetValue = options.dataAttribute;
-            const splitData = dataTargetValue.split(",");
+        if (!options.dataAttribute) return;
 
-            // ** set the attribute into the dom element ** //
-            domCreateElem.setAttribute(`data-${splitData[0]}`, `${splitData[1].trim()}`);
-        }
+        // ** setting the data attribute into the dom elements ** //
+        options.dataAttribute.forEach((el, i, array) => {
+            for (const property in el) {
+                // ** set the attribute into the dom element ** //
+                domCreateElem.setAttribute(`data-${property}`, `${el[property].trim()}`);
+            }
+        });
     };
 
     // ** convert the tags into the a tag if the tag has no link property then convert the tag into the a tag and then add the link into them ** //
@@ -275,79 +308,78 @@
 
         return a;
     };
+
     // checking fucntions ** //
 
-    // ** creat the dom elements  ** //
-    globalFnObject.createDomElements = function (elem, options) {
-        const targetDiv = _grabDocumentElements(elem);
+    // ** create the dom elements  ** //
+    globalFnObject.CreateElements = function (injectElementTarget, element, options) {
+        // ** grab the parent element ** //
+        const target = _grabDocumentElements(injectElementTarget);
 
-        if (!targetDiv) return;
+        if (!target) errorHandler("DOM elements is not found");
 
-        // ** creating dom elements ** //
-        for (const property in options) {
-            // ** first we want to ceate the element then if there is a option object to add the classes and text content the add the class and content into that div ** //
-            domCreateElem = document.createElement(property);
+        let domELementCreate = document.createElement(element);
+
+        // ** checking class function ** //
+        _checkClass(options, domELementCreate);
+
+        // ** checking id function ** //
+        _checkId(options, domELementCreate);
+
+        // ** checking inner text content function ** //
+        _checkTextContent(options, domELementCreate);
+
+        // ** checking data target function ** //
+        _checkDataTargetFunction(options, domELementCreate);
+
+        console.log(target);
+        console.log(domELementCreate);
+
+        // ** setting the link && herf tag into the dom element ** //
+        if (options.link) {
+            // ** first we want to check the element is the 'a' tag if the element is 'a' tag then add the link to it, if the elements is not 'a' tag then first creat the a tag an place the element into the a tag and then add the link to into the a tag ** //
+            if (element === "a") {
+                domELementCreate.setAttribute("href", options.link);
+            } else {
+                domELementCreate = _convertIntoATag(options, element);
+            }
+        }
+
+        // ** inject the create element into the select element ** //
+        target.appendChild(domELementCreate);
+
+        // ** if there is a inner elements object then craete all the inner elements and inject into the parent elements ** //
+        if (!options.innerElements) return;
+
+        options.innerElements.forEach((el, i, array) => {
+            if (Object.keys(el).length === 0) errorHandler("inner elements array is empty");
+
+            if (!el.element) errorHandler("DOM element tag name is required");
+
+            let innerElementCreate = document.createElement(el.element);
 
             // ** checking class function ** //
-            _checkClass(options[property], domCreateElem);
+            _checkClass(el, innerElementCreate);
 
             // ** checking id function ** //
-            _checkId(options[property], domCreateElem);
+            _checkId(el, innerElementCreate);
 
             // ** checking inner text content function ** //
-            _checkTextContent(options[property], domCreateElem);
+            _checkTextContent(el, innerElementCreate);
 
             // ** checking data target function ** //
-            _checkDataTargetFunction(options[property], domCreateElem);
+            _checkDataTargetFunction(el, innerElementCreate);
 
-            // ** setting the link && herf tag into the dom element ** //
-            if (options[property].link) {
-                // ** first we want to check the element is the 'a' tag if the element is 'a' tag then add the link to it, if the elements is not 'a' tag then first creat the a tag an place the element into the a tag and then add the link to into the a tag ** //
-                if (property === "a") {
-                    domCreateElem.setAttribute("href", options[property].link);
+            if (el.link) {
+                if (el.element === "a") {
+                    innerElementCreate.setAttribute("href", el.link);
                 } else {
-                    domCreateElem = _convertIntoATag(options[property], property);
+                    innerElementCreate = _convertIntoATag(el, el.element);
                 }
             }
 
-            // ** checking inner elements ** //
-            if (options[property].innerElements) {
-                for (const innerElementProperty in options[property].innerElements) {
-                    let key = innerElementProperty;
-                    let value = options[property].innerElements[innerElementProperty];
-
-                    // ** creating a dom element ** //
-                    let innerDomElements = document.createElement(key);
-
-                    // ** checking class function ** //
-                    _checkClass(value, innerDomElements);
-
-                    // ** checking id function ** //
-                    _checkId(value, innerDomElements);
-
-                    // ** checking inner text content function ** //
-                    _checkTextContent(value, innerDomElements);
-
-                    // ** checking data target function ** //
-                    _checkDataTargetFunction(value, innerDomElements);
-
-                    if (value.link) {
-                        if (key === "a") {
-                            innerDomElements.setAttribute("href", value.link);
-                        } else {
-                            // convert into a tag...
-                            innerDomElements = _convertIntoATag(value, key);
-                        }
-                    }
-
-                    // ** insert the creating elements into the parent div elements ** //
-                    domCreateElem.append(innerDomElements);
-                }
-            }
-
-            // ** inserting the dom elements into the target element ** //
-            targetDiv.insertAdjacentElement("beforeend", domCreateElem);
-        }
+            target.appendChild(innerElementCreate);
+        });
     };
 
     // ** return the global object for the user can access the libray object ** //
