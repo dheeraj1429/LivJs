@@ -88,36 +88,6 @@
         }, 50);
     };
 
-    // ** bounce animation  ** //
-    globalFnObject.loadingBounce = function (elem, option) {
-        let target = _grabDocumentElements(elem);
-        let ballNumbers = 6;
-
-        // ** if there is no elements found then throw a new error on to console ** //
-        if (!target) throw new Error(`slide text dom elements is not found!!`);
-
-        const divElm = document.createElement("div");
-        divElm.className = "bounce-div-element";
-
-        for (const styled in option) {
-            divElm.style[`${styled}`] = `${option[styled]}`;
-        }
-
-        for (let i = 0; i < ballNumbers; i++) {
-            const innerDivElm = document.createElement("div");
-            innerDivElm.className = "ball";
-
-            if (i === 3 || i > 3) {
-                innerDivElm.className = "shadow";
-            }
-
-            divElm.appendChild(innerDivElm);
-        }
-
-        // ** replace the target element with the new created div element ** //
-        target.replaceWith(divElm);
-    };
-
     // ** slide options object ** //
     const slideOptionsFn = function (options) {
         const Option = {
@@ -253,6 +223,43 @@
         checkClassIsPresent(target, options);
     };
 
+    // ** mouse hover effect ** //
+    globalFnObject.mouse = function (element, options) {
+        const target = _grabDocumentElements(element, options);
+
+        if (!target) errorHandler("DOM elements is not found");
+
+        console.log(target);
+
+        // ** if there is the multypal dom elements then loop over the dom elements and add the animation classes for each element dynamic but if there is only on element then add the class into that element ** //
+
+        const removeAnimationFn = function (element, attribute) {
+            window.setTimeout(function () {
+                element.classList.remove("animated", "infinite", attribute);
+            }, 3000);
+        };
+
+        if (target.length === undefined) {
+            target.addEventListener("mouseenter", function () {
+                const dataAttribute = target.getAttribute("data-animation");
+
+                target.classList.add("animated", "infinite", dataAttribute);
+
+                removeAnimationFn(target, dataAttribute);
+            });
+        } else {
+            target.forEach((el, i, array) => {
+                el.addEventListener("mouseenter", function (e) {
+                    const dataAttribute = e.target.getAttribute("data-animation");
+
+                    e.target.classList.add("animated", "infinite", dataAttribute);
+
+                    removeAnimationFn(e.target, dataAttribute);
+                });
+            });
+        }
+    };
+
     // checking fucntions ** //
     const _checkClass = function (options, domCreateElem) {
         if (!options.class) return;
@@ -349,9 +356,9 @@
         target.appendChild(domELementCreate);
 
         // ** if there is a inner elements object then craete all the inner elements and inject into the parent elements ** //
-        if (!options.innerElements) return;
+        if (!options.parentInnerElements) return;
 
-        options.innerElements.forEach((el, i, array) => {
+        options.parentInnerElements.forEach((el, i, array) => {
             if (Object.keys(el).length === 0) errorHandler("inner elements array is empty");
 
             if (!el.element) errorHandler("DOM element tag name is required");
@@ -378,6 +385,7 @@
                 }
             }
 
+            // ** the parent inner elements property is inject the elements into the injectTargetElement div which is the target element in root ** //
             target.appendChild(innerElementCreate);
         });
     };
@@ -392,3 +400,15 @@
         window.livJs = _myLibraryFn();
     }
 })(window);
+
+// let i = 0;
+
+// const animation = function () {
+//     i++;
+
+//     console.log(`love you ${i}`);
+
+//     requestAnimationFrame(animation);
+// };
+
+// animation();

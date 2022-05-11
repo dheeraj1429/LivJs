@@ -54,16 +54,29 @@
     <body>
         <section></section>
         <section>
-            <div class="container"></div>
+            <div class="container">
+                <div class="box" data-animation="bounce"></div>
+                <div class="box" data-animation="flash"></div>
+                <div class="box" data-animation="rubberBand"></div>
+                <div class="box" data-animation="swing"></div>
+            </div>
         </section>
 
         <script src="./script.js"></script>
         <script>
-            livJs.CreateElements(".container", "div", {
-                class: "box",
-                id: "id",
-                dataAttribute: [{ target: "data-element" }],
-            });
+            // livJs.mouse(".box", { elements: "many" });
+
+            // livJs.CreateElements(".container", "div", {
+            //     class: "box",
+            //     id: "id",
+            //     dataAttribute: [{ target: "data-element" }],
+            //     parentInnerElements: [
+            //         {
+            //             element: "div",
+            //             class: "box",
+            //         },
+            //     ],
+            // });
         </script>
     </body>
 </html>
