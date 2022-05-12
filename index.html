@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
 
-        <link rel="stylesheet" href="./LivJs.style.css" />
+        <link rel="stylesheet" href="./stylesheet/LivJs.style.css" />
 
         <style>
             * {
@@ -20,8 +20,9 @@
                 display: flex;
             }
             .container {
-                display: flex;
-                justify-content: space-around;
+                display: grid;
+                grid-template-columns: repeat(10, 1fr);
+                /* justify-content: space-around; */
                 align-items: center;
                 width: 100%;
                 background-image: linear-gradient(
@@ -33,10 +34,7 @@
                     #a8eb12
                 );
             }
-            .box,
-            .section_box,
-            .three_box,
-            .four_box {
+            .box {
                 width: 100px;
                 height: 100px;
                 border-radius: 5px;
@@ -54,29 +52,28 @@
     <body>
         <section></section>
         <section>
-            <div class="container">
-                <div class="box" data-animation="bounce"></div>
-                <div class="box" data-animation="flash"></div>
-                <div class="box" data-animation="rubberBand"></div>
-                <div class="box" data-animation="swing"></div>
-            </div>
+            <div class="container"></div>
         </section>
 
-        <script src="./script.js"></script>
+        <script src="./javascript/script.js"></script>
         <script>
-            // livJs.mouse(".box", { elements: "many" });
+            livJs.CreateElements(".container", "div", {
+                class: "box",
+                id: "id",
+                dataAttribute: [{ animation: "bounce" }],
+            });
 
-            // livJs.CreateElements(".container", "div", {
-            //     class: "box",
-            //     id: "id",
-            //     dataAttribute: [{ target: "data-element" }],
-            //     parentInnerElements: [
-            //         {
-            //             element: "div",
-            //             class: "box",
-            //         },
-            //     ],
-            // });
+            // livJs.mouse(".box", { elements: "one" });
+
+            // livJs
+            //     .animate(".box", {
+            //         element: "one",
+            //     })
+            //     .add({
+            //         animate: "bounce",
+            //         animation: "loop",
+            //         delay: "3s",
+            //     });
         </script>
     </body>
 </html>

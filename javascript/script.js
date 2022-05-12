@@ -8,7 +8,14 @@
     let char = 0,
         domCreateElem,
         IntersectionObsertFn,
-        targetElm;
+        targetElm,
+        dataAttribute,
+        domTarget;
+
+    // ** error function ** //
+    const errorHandler = function (error) {
+        throw new Error(error);
+    };
 
     // ** document selection function to grab the document from the dom return the values based on the conditon ** //
     const _grabDocumentElements = function (elem, options) {
@@ -36,7 +43,7 @@
         const targetElm = _grabDocumentElements(elem, styleOptions);
 
         // ** if the target is not find then the function return nothing ** //
-        if (!targetElm) return;
+        if (!targetElm) errorHandler("DOM elements is not find");
 
         // ** remove the elemtns property from the object if the elements poperty is removed from the object then we can easy loop over the object and add the styled into the dom element ** //
         delete styleOptions.elements;
@@ -60,6 +67,8 @@
     // ** animation text ** //
     globalFnObject.textAnimation = function (elem, options) {
         const target = _grabDocumentElements(elem, options);
+
+        if (!target) errorHandler("DOM elements is not find");
 
         // ** grab the target element then replace the element tag into the span ** //
         target.innerHTML = _convertSpanFn(target);
@@ -129,27 +138,25 @@
 
         if (!el.isIntersecting) {
             target.classList.add(`${addClass}`);
+
             target.classList.remove(`${removeClass}`);
         }
 
         // ** if the target is intersecting the dom ** //
         if (el.isIntersecting) {
             target.style.transition = "all 0.5s ease";
+
             target.classList.add(`${removeClass}`);
+
             target.classList.remove(`${addClass}`);
         }
-    };
-
-    // ** error function ** //
-    const errorHandler = function (error) {
-        throw new Error(error);
     };
 
     // ** scroll down animation ** //
     globalFnObject.animation = function (elem, options) {
         const targetElem = _grabDocumentElements(elem, options);
 
-        if (!targetElem || targetElem.length === 0) errorHandler('"DOM elements is not found"');
+        if (!targetElem || targetElem.length === 0) errorHandler('"DOM elements is not find"');
 
         // ** animation options object ** //
         const Option = slideOptionsFn(options);
@@ -204,6 +211,8 @@
     globalFnObject.toggle = function (element, options) {
         const target = _grabDocumentElements(element);
 
+        if (!target) errorHandler("DOM elements is not find");
+
         if (options.clickTarget) {
             const clickTargetElem = _grabDocumentElements(options.clickTarget, options);
 
@@ -227,12 +236,9 @@
     globalFnObject.mouse = function (element, options) {
         const target = _grabDocumentElements(element, options);
 
-        if (!target) errorHandler("DOM elements is not found");
+        if (!target) errorHandler("DOM elements is not find");
 
-        console.log(target);
-
-        // ** if there is the multypal dom elements then loop over the dom elements and add the animation classes for each element dynamic but if there is only on element then add the class into that element ** //
-
+        // ** remove the animation in 3s ** //
         const removeAnimationFn = function (element, attribute) {
             window.setTimeout(function () {
                 element.classList.remove("animated", "infinite", attribute);
@@ -240,17 +246,18 @@
         };
 
         if (target.length === undefined) {
-            target.addEventListener("mouseenter", function () {
-                const dataAttribute = target.getAttribute("data-animation");
+            target.addEventListener(options.event ? options.event : "mouseenter", function () {
+                dataAttribute = target.getAttribute("data-animation");
 
                 target.classList.add("animated", "infinite", dataAttribute);
 
                 removeAnimationFn(target, dataAttribute);
             });
         } else {
+            // ** if there is the multypal dom elements then loop over the dom elements and add the animation classes for each element dynamic but if there is only on element then add the class into that element ** //
             target.forEach((el, i, array) => {
-                el.addEventListener("mouseenter", function (e) {
-                    const dataAttribute = e.target.getAttribute("data-animation");
+                el.addEventListener(options.event ? options.event : "mouseenter", function (e) {
+                    dataAttribute = e.target.getAttribute("data-animation");
 
                     e.target.classList.add("animated", "infinite", dataAttribute);
 
@@ -258,6 +265,73 @@
                 });
             });
         }
+    };
+
+    // ** animation effect ** //
+    globalFnObject.animate = function (element, options) {
+        domTarget = _grabDocumentElements(element, options);
+
+        if (!domTarget) errorHandler("DOM elements is not find");
+
+        return this;
+    };
+
+    // ** animation checking funtion ** //
+    const _checkAnimationCount = function (options, element) {
+        if (!options.animation) return;
+
+        if (options.animation === "infinite" || options.animation === "loop") {
+            element.classList.add("infinite");
+        } else if (options.animation === "one" || options.animation === 1) {
+            element.classList.add("repeat-1");
+        } else {
+            element.classList.add(`repeat-${options.animation}`);
+        }
+    };
+
+    const _checkAnimationClass = function (options, element) {
+        if (!options.animate) return;
+
+        element.classList.add(options.animate);
+    };
+
+    const _checkAnimationDelay = function (options, element) {
+        if (!options.delay) return;
+
+        element.classList.add(`delay-${options.delay}`);
+    };
+
+    const _checkEventClassFn = function (options, element) {
+        if (!options.event) return;
+
+        element.classList.add(`${options.event}`);
+    };
+
+    globalFnObject.add = function (options) {
+        // ** add all styled in the dom target element ** //
+        if (options === undefined) return;
+
+        if (!domTarget) errorHandler("DOM elements is not find");
+
+        if (Object.keys(options).length === 0) return;
+
+        domTarget.classList.add("animated");
+
+        // ** check the animation loop ** //
+        _checkAnimationCount(options, domTarget);
+
+        // ** check the animation class in the object ** //
+        _checkAnimationClass(options, domTarget);
+
+        // ** check animation delay function ** //
+        _checkAnimationDelay(options, domTarget);
+
+        // ** check the event class function ** //
+        _checkEventClassFn(options, domTarget);
+
+        console.log(domTarget);
+
+        return this;
     };
 
     // checking fucntions ** //
@@ -294,6 +368,7 @@
     // ** convert the tags into the a tag if the tag has no link property then convert the tag into the a tag and then add the link into them ** //
     const _convertIntoATag = function (options, property) {
         const a = document.createElement("a");
+
         a.href = options.link;
 
         const domELem = document.createElement(property);
@@ -323,7 +398,7 @@
         // ** grab the parent element ** //
         const target = _grabDocumentElements(injectElementTarget);
 
-        if (!target) errorHandler("DOM elements is not found");
+        if (!target) errorHandler("DOM elements is not find");
 
         let domELementCreate = document.createElement(element);
 
@@ -339,8 +414,8 @@
         // ** checking data target function ** //
         _checkDataTargetFunction(options, domELementCreate);
 
-        console.log(target);
-        console.log(domELementCreate);
+        // console.log(target);
+        // console.log(domELementCreate);
 
         // ** setting the link && herf tag into the dom element ** //
         if (options.link) {
@@ -400,15 +475,3 @@
         window.livJs = _myLibraryFn();
     }
 })(window);
-
-// let i = 0;
-
-// const animation = function () {
-//     i++;
-
-//     console.log(`love you ${i}`);
-
-//     requestAnimationFrame(animation);
-// };
-
-// animation();
